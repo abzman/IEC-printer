@@ -6,7 +6,7 @@
 #include "printer.h"
 
 // printer
-Adafruit_Thermal printer(&COMPORT); 
+Adafruit_Thermal printer(&COMPORT, 9); 
 
 uint8_t buff[64];
 uint8_t ptr=0;
@@ -182,7 +182,7 @@ void c64testpage(uint8_t iecaddress)
   c64println_P((PGM_P)F("\r"));
   c64println_P((PGM_P)F("MORE INFO AT\r"));
   c64println_P((PGM_P)F(" SMDPRUTSER.NL/\r"));
-  c64println_P((PGM_P)F(" GITHUB.COM/SMDPRUTSER/IEC-PRINTER\r"));
+  c64println_P((PGM_P)F(" GITHUB.COM/ABZMAN/IEC-PRINTER\r"));
   c64println_P((PGM_P)F("\r"));
 
   sprintf_P(line, (PGM_P)F("PRIMARY ADDRESS SET TO %d\r"), iecaddress);
@@ -194,4 +194,11 @@ void c64testpage(uint8_t iecaddress)
   c64println_P((PGM_P)F(" SECONDARY ADDRESS 0 C64 UPPERCASE\r"));
   c64println_P((PGM_P)F(" SECONDARY ADDRESS 7 C64 LOWERCASE\r"));
   c64println_P((PGM_P)F(" SECONDARY ADDRESS 1 PCFONT\r"));
+  c64println_P((PGM_P)F("\r")); //added lines to push test page past tear boundary. 
+  c64println_P((PGM_P)F("\r")); //something about how this library handles the printer makes the paper feed button not work all the time.
+  c64println_P((PGM_P)F("\r"));
+  c64println_P((PGM_P)F("\r"));
+  c64println_P((PGM_P)F("\r"));
+  c64println_P((PGM_P)F("\r"));
+  c64println_P((PGM_P)F("\r"));
 }

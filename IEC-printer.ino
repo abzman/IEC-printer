@@ -1,3 +1,8 @@
+// abzman changed a few things:
+// added enough new lines to the trst page so it can be torn off (maybe need to add that to the end of all printer transactions?)
+// changed to use control line (on pin 8)
+// changed pins for LED and button
+// changed test page to point at my repo
 
 #include "global_defines.h"
 #include "iec_driver.h"
@@ -13,6 +18,10 @@ static Interface iface(iec);
 #define SHORTPRESS  200
 #define DEBOUNCE    50
 
+#define LEDpin  13
+#define ADDRpin  7
+#define BTNpin  8
+
 static uint8_t button_laststate;
 static uint32_t button_downtime;
 int iecaddr;
@@ -25,23 +34,23 @@ void setup()
   COMPORT.setTimeout(SERIAL_TIMEOUT_MSECS);
   c64printinit();
 
-  pinMode(A4, OUTPUT);  // busy led
-  digitalWrite(A4, 0);
+  pinMode(LEDpin, OUTPUT);  // busy led
+  digitalWrite(LEDpin, 0);
 
-  pinMode(7, INPUT);    // iec address
-  pinMode(A5 ,INPUT);     // online button
+  pinMode(ADDRpin, INPUT);    // iec address
+  pinMode(BTNpin ,INPUT_PULLUP);     // online button
 
   button_laststate=HIGH;
 
   delay(100);
 
-  if(digitalRead(7)==HIGH)
+  if(digitalRead(ADDRpin)==HIGH)
     iecaddr=5;
   else
     iecaddr=4;
 
   // check if button is pressed
-  if(digitalRead(A5)==LOW)
+  if(digitalRead(BTNpin)==LOW)
   {
     c64testpage(iecaddr);
   }
@@ -55,7 +64,7 @@ void setup()
 	// set all digital pins in a defined state.
 	iec.init();
 
-  digitalWrite(A4, 1);
+  digitalWrite(LEDpin, 1);
 } // setup
 
 
@@ -74,12 +83,12 @@ void loop()
   {
     case IEC::ATN_RESET:  while(IEC::ATN_RESET == iface.handler());
                           break;
-    case IEC::ATN_IDLE:   if((digitalRead(A5)==LOW)&&(button_laststate==HIGH))
+    case IEC::ATN_IDLE:   if((digitalRead(BTNpin)==LOW)&&(button_laststate==HIGH))
                           {
                             button_downtime=millis();
                             button_laststate=LOW;
                           }
-                          else if((digitalRead(A5)==HIGH)&&(button_laststate==LOW))
+                          else if((digitalRead(BTNpin)==HIGH)&&(button_laststate==LOW))
                           {
                             downtime=millis()-button_downtime;
                             if((downtime>DEBOUNCE)&&(downtime<SHORTPRESS))
@@ -91,12 +100,12 @@ void loop()
                               if(iec.deviceNumber()==31)
                               {
                                 iec.setDeviceNumber(iecaddr);
-                                digitalWrite(A4, 1);
+                                digitalWrite(LEDpin, 1);
                               }
                               else
                               {
                                 iec.setDeviceNumber(31);
-                                digitalWrite(A4, 0);
+                                digitalWrite(LEDpin, 0);
                               }
                               
                             }
